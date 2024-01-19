@@ -18,7 +18,7 @@ abstract class ConfigurationCreator(private val plugin: JavaPlugin) {
     private val minor = Segment.range(0, 10)
     private val patch = Segment.range(0, 100)
     private val separator = Segment.literal(".")
-    private val pattern = Pattern(major, separator, minor, separator, patch)
+    protected val pattern = Pattern(major, separator, minor, separator, patch)
 
     abstract val fileName: String
 
