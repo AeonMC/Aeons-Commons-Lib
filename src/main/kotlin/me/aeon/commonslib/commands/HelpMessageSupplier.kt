@@ -1,6 +1,6 @@
 package me.aeon.commonslib.commands
 
-import me.aeon.commonslib.components.Replacers
+import me.aeon.commonslib.components.Replacers.Companion.replacedWith
 import me.aeon.commonslib.message.MessageParser
 import me.aeon.commonslib.message.MessageParser.ParseType.*
 import me.aeon.commonslib.message.MessageSender
@@ -8,7 +8,7 @@ import org.bukkit.command.CommandSender
 
 @Suppress("unused")
 class HelpMessageSupplier(
-    private val command: CoreCommand, private val messagePath: String,
+    private val command: CoreCommand<*>, private val messagePath: String,
     private val messageParser: MessageParser, private val messageSender: MessageSender
 ) {
 
@@ -27,10 +27,10 @@ class HelpMessageSupplier(
 
             if (subcommand is SubcommandArgumentProvider) {
                 val replacers = buildList {
-                    add(Replacers.withString("%command%", "/$commandAlias"))
-                    add(Replacers.withString("%description%", subcommand.description))
-                    add(Replacers.withString("%subcommand+args%",
-                        "${subcommand.name} ${subcommand.arguments().joinToString(separator = " ") { it.name }}"))
+                    add("%command%" replacedWith "/$commandAlias")
+                    add("%description%" replacedWith  subcommand.description)
+                    add("%subcommand+args%" replacedWith
+                        "${subcommand.name} ${subcommand.arguments().joinToString(separator = " ") { it.name }}")
                 }
 
                 body.forEach { messageSender.send(recipient, it, replacers) }
@@ -38,9 +38,9 @@ class HelpMessageSupplier(
             }
 
             val replacers = buildList {
-                add(Replacers.withString("%command%", "/$commandAlias"))
-                add(Replacers.withString("%subcommand+args%", subcommand.name))
-                add(Replacers.withString("%description%", subcommand.description))
+                add("%command%" replacedWith "/$commandAlias")
+                add("%subcommand+args%" replacedWith subcommand.name)
+                add("%description%" replacedWith subcommand.description)
             }
 
             body.forEach { messageSender.send(recipient, it, replacers) }

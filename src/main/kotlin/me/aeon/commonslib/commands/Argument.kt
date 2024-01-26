@@ -5,12 +5,8 @@ package me.aeon.commonslib.commands
  */
 @Suppress("unused")
 class Argument private constructor(
-    // e.g. "<target>"
     val name: String,
-    // First after the subcommand e.g. "/cfa set <target> <fontId>", would be 0
-    // Suggestions when autocompleting the subcommand, e.g. a list of online player names
     val suggestions: MutableList<String>,
-    // When the suggestion list above is empty, retrieve from this one
     val fallbackSugestions: MutableList<String>?,
     val fallbackMinInputLength: Int = 1,
     val isOptional: Boolean = false
@@ -25,7 +21,7 @@ class Argument private constructor(
         private var isOptional = false
 
         /**
-         * Argument name, e.g. when one executes "/cf"
+         * Argument suggestion name
          */
         fun name(name: String) = apply { this.name = name }
 

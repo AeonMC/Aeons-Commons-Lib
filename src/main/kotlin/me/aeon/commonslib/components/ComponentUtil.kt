@@ -9,10 +9,10 @@ class ComponentUtil private constructor() {
         private val miniMessage = MiniMessage.miniMessage()
 
         /**
-         * Extension function that converts a [String] into a [Component]
+         * Extension function that converts [any nullable][Any] object into a [Component]
          */
         @JvmStatic
-        fun String.toComponent() = miniMessage.deserialize(this)
+        fun Any?.toComponent() = miniMessage.deserialize(this.toString())
     }
 
 }

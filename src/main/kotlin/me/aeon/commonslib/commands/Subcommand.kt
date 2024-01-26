@@ -1,6 +1,6 @@
 package me.aeon.commonslib.commands
 
-import me.aeon.commonslib.components.Replacers
+import me.aeon.commonslib.components.Replacers.Companion.replacedWith
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.plugin.java.JavaPlugin
@@ -9,7 +9,11 @@ import org.bukkit.plugin.java.JavaPlugin
  * Describes a subcommand of a [CoreCommand] with possible arguments (by implementing [SubcommandArgumentProvider])
  */
 @Suppress("unused")
-abstract class Subcommand(plugin: JavaPlugin) : StandardCommand(plugin) {
+abstract class Subcommand<T>(
+    plugin: T
+) : StandardCommand<T>(plugin) where T : JavaPlugin,
+                                  T : MessageParserProvider,
+                                  T : MessageSenderProvider  {
 
     /**
      * Name of the subcommand
@@ -63,17 +67,17 @@ abstract class Subcommand(plugin: JavaPlugin) : StandardCommand(plugin) {
         // e.g. /cfa reset <target>
         if (this is SubcommandArgumentProvider) {
 
-            // Execution condition
+            /* Execution condition */
             if ((argSize - 1 >= minArgSize()) && (argSize - 1 <= maxArgSize())) {
                 execute(sender, commandAlias, args[0], args.copyOfRange(1, args.size))
                 return true
             }
 
             val replacers = buildList {
-                add(Replacers.withString("%command%", "/$commandAlias"))
-                add(Replacers.withString("%subcommand+args%",
-                    "${args[0]} ${arguments().joinToString(separator = " ") { it.name }}"))
-                add(Replacers.withString("%description%", description))
+                add("%command%" replacedWith "/$commandAlias")
+                add("%subcommand+args%" replacedWith
+                    "${args[0]} ${arguments().joinToString(separator = " ") { it.name }}")
+                add("%description%" replacedWith description)
             }
 
             messageSender.send(sender, "general.command-usage", replacers)
@@ -86,9 +90,9 @@ abstract class Subcommand(plugin: JavaPlugin) : StandardCommand(plugin) {
         }
 
         val replacers = buildList {
-            add(Replacers.withString("%command%", "/$commandAlias"))
-            add(Replacers.withString("%subcommand+args%", args[0]))
-            add(Replacers.withString("%description%", description))
+            add("%command%" replacedWith "/$commandAlias")
+            add("%subcommand+args%" replacedWith args[0])
+            add("%description%" replacedWith description)
         }
 
         messageSender.send(sender, "general.command-usage", replacers)

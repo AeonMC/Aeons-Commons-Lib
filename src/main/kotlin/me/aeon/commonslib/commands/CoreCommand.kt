@@ -1,16 +1,28 @@
 package me.aeon.commonslib.commands
 
-import me.aeon.commonslib.components.Replacers
+import me.aeon.commonslib.components.Replacers.Companion.replacedWith
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.plugin.java.JavaPlugin
 
 @Suppress("unused")
-abstract class CoreCommand(
-    plugin: JavaPlugin
-) : StandardCommand(plugin) {
+abstract class CoreCommand<T>(
+    plugin: T,
+    private val helpMessagePath: String // The supplier of help message (when no arguments are passed)
+) : StandardCommand<T>(plugin) where T : JavaPlugin,
+                                     T : MessageParserProvider,
+                                     T : MessageSenderProvider {
 
-    val subcommands: List<Subcommand> by lazy { subcommands() }
+
+    val subcommands: List<Subcommand<*>> by lazy { subcommands() }
+    val helpMessageSupplier by lazy {
+        HelpMessageSupplier(
+            this, helpMessagePath,
+            plugin.messageParser,
+            plugin.messageSender
+        )
+    }
+
     private val tabSuggestions: List<String> by lazy { tabSuggestions() }
     private val fallbackMinInputLength = 1
 
@@ -34,7 +46,7 @@ abstract class CoreCommand(
     /**
      * Returns the subcommands of this command
      */
-    abstract fun subcommands(): List<Subcommand>
+    abstract fun subcommands(): List<Subcommand<*>>
 
     /**
      * Populate the [suggestion list][tabSuggestions] with subcommand names
@@ -47,17 +59,12 @@ abstract class CoreCommand(
     /**
      * Returns the found [Subcommand] or `null` if not found
      */
-    private fun findSubcommand(arg: String): Subcommand? {
+    private fun findSubcommand(arg: String): Subcommand<*>? {
         return subcommands.firstOrNull { subcommand ->
             subcommand.identifiers()
                 .any { id -> id.equals(arg, true) }
         }
     }
-
-    /**
-     * The supplier of help message (when no arguments are passed)
-     */
-    abstract val helpMessageSupplier: HelpMessageSupplier
 
     override fun onCommand(
         sender: CommandSender, command: Command,
@@ -79,7 +86,7 @@ abstract class CoreCommand(
         if (subcommand == null) {
             messageSender.send(
                 sender, "general.subcommand-does-not-exist",
-                Replacers.withString("%subcommand%", subcommandName)
+                "%subcommand%" replacedWith subcommandName
             )
             return true
         }
