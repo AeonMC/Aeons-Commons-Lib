@@ -1,16 +1,25 @@
 package me.aeon.commonslib.commands
 
-import me.aeon.commonslib.components.Replacers
+import me.aeon.commonslib.components.Replacers.Companion.replacedWith
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.plugin.java.JavaPlugin
 
 @Suppress("unused")
 abstract class CoreCommand(
-    plugin: JavaPlugin
+    plugin: JavaPlugin,
+    private val helpMessagePath: String // The supplier of help message (when no arguments are passed)
 ) : StandardCommand(plugin) {
 
     val subcommands: List<Subcommand> by lazy { subcommands() }
+    val helpMessageSupplier by lazy {
+        HelpMessageSupplier(
+            this, helpMessagePath,
+            (plugin as MessageParserProvider).messageParser,
+            (plugin as MessageSenderProvider).messageSender
+        )
+    }
+
     private val tabSuggestions: List<String> by lazy { tabSuggestions() }
     private val fallbackMinInputLength = 1
 
@@ -54,11 +63,6 @@ abstract class CoreCommand(
         }
     }
 
-    /**
-     * The supplier of help message (when no arguments are passed)
-     */
-    abstract val helpMessageSupplier: HelpMessageSupplier
-
     override fun onCommand(
         sender: CommandSender, command: Command,
         alias: String, args: Array<out String>
@@ -79,7 +83,7 @@ abstract class CoreCommand(
         if (subcommand == null) {
             messageSender.send(
                 sender, "general.subcommand-does-not-exist",
-                Replacers.withString("%subcommand%", subcommandName)
+                "%subcommand%" replacedWith subcommandName
             )
             return true
         }

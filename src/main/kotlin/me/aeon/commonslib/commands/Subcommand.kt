@@ -1,6 +1,6 @@
 package me.aeon.commonslib.commands
 
-import me.aeon.commonslib.components.Replacers
+import me.aeon.commonslib.components.Replacers.Companion.replacedWith
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.plugin.java.JavaPlugin
@@ -70,10 +70,10 @@ abstract class Subcommand(plugin: JavaPlugin) : StandardCommand(plugin) {
             }
 
             val replacers = buildList {
-                add(Replacers.withString("%command%", "/$commandAlias"))
-                add(Replacers.withString("%subcommand+args%",
-                    "${args[0]} ${arguments().joinToString(separator = " ") { it.name }}"))
-                add(Replacers.withString("%description%", description))
+                add("%command%" replacedWith "/$commandAlias")
+                add("%subcommand+args%" replacedWith
+                    "${args[0]} ${arguments().joinToString(separator = " ") { it.name }}")
+                add("%description%" replacedWith description)
             }
 
             messageSender.send(sender, "general.command-usage", replacers)
@@ -86,9 +86,9 @@ abstract class Subcommand(plugin: JavaPlugin) : StandardCommand(plugin) {
         }
 
         val replacers = buildList {
-            add(Replacers.withString("%command%", "/$commandAlias"))
-            add(Replacers.withString("%subcommand+args%", args[0]))
-            add(Replacers.withString("%description%", description))
+            add("%command%" replacedWith "/$commandAlias")
+            add("%subcommand+args%" replacedWith args[0])
+            add("%description%" replacedWith description)
         }
 
         messageSender.send(sender, "general.command-usage", replacers)

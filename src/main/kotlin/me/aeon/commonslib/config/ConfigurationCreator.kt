@@ -34,7 +34,7 @@ abstract class ConfigurationCreator(private val plugin: JavaPlugin) {
     open fun dumperSettings(): DumperSettings = DumperSettings.DEFAULT
 
     open fun updaterSettings(): UpdaterSettings = UpdaterSettings.builder()
-        .setVersioning(pattern, "version")
+        .setVersioning(pattern, "config-version")
         .build()
 
     fun createConfiguration(): YamlDocument {
