@@ -1,13 +1,13 @@
 package me.aeon.commonslib.commands
 
 /**
- * Describes a [Subcommand] argument
+ * A [Subcommand] argument
  */
 @Suppress("unused")
 class Argument private constructor(
     val name: String,
     val suggestions: MutableList<String>,
-    val fallbackSugestions: MutableList<String>?,
+    val fallbackSuggestions: MutableList<String>?,
     val fallbackMinInputLength: Int = 1,
     val isOptional: Boolean = false
 ) {
@@ -42,7 +42,7 @@ class Argument private constructor(
          */
         fun fallbackSuggestions(fallbackSuggestions: List<String>?, minInputLength: Int = 1) =
             apply {
-                this.fallbackMinInputLength = minInputLength
+                fallbackMinInputLength(minInputLength)
 
                 if (fallbackSuggestions == null) {
                     this.fallbackSuggestions = null
