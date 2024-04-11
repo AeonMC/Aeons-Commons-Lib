@@ -41,32 +41,6 @@ class Replacers private constructor() {
         }
 
         @JvmStatic
-        @Deprecated("In favor of infix functions", ReplaceWith("replacedWith"))
-        fun ofStringList(matcher: String, replacement: List<String>) =
-            buildReplacementConfig(matcher, replacement, MAPPER_FROM_STRING_LIST)
-
-        @JvmStatic
-        @Deprecated("In favor of infix functions", ReplaceWith("replacedWith"))
-        fun ofComponentList(matcher: String, replacement: List<Component>) =
-            buildReplacementConfig(matcher, replacement, MAPPER_FROM_LIST)
-
-        @JvmStatic
-        @Deprecated("In favor of infix functions", ReplaceWith("replacedWith"))
-        fun ofComponent(matcher: String, replacement: Component) =
-            buildReplacementConfig(matcher, replacement, MAPPER_DIRECT)
-
-        @JvmStatic
-        @Deprecated("In favor of infix functions", ReplaceWith("replacedWith"))
-        fun of(matcher: String, replacement: Any) =
-            buildReplacementConfig(matcher, replacement, MAPPER_FROM_ANY)
-
-        @JvmStatic
-        @Deprecated("In favor of infix functions", ReplaceWith("replacedWith"))
-        fun of(matcher: String, replacement: () -> Any) =
-            of(matcher, replacement())
-
-
-        @JvmStatic
         infix fun String.replacedWith(replacement: Any) =
             buildReplacementConfig(this, replacement, MAPPER_FROM_ANY)
 
@@ -95,8 +69,18 @@ class Replacers private constructor() {
         }
 
         @JvmStatic
+        fun replace(component: Component, vararg replacers: TextReplacementConfig): Component {
+            return replace(component, replacers.toList())
+        }
+
+        @JvmStatic
         fun replace(components: List<Component>, replacers: List<TextReplacementConfig>): List<Component> {
             return components.map { replace(it, replacers) }
+        }
+
+        @JvmStatic
+        fun replace(components: List<Component>, vararg replacers: TextReplacementConfig): List<Component> {
+            return replace(components, replacers.toList())
         }
 
     }
