@@ -16,6 +16,10 @@ class MessageSender(private val parser: MessageParser) {
             .forEach { send(recipient, replace(it, replacers)) }
     }
 
+    fun send(recipient: CommandSender, key: String, vararg replacers: TextReplacementConfig) {
+        send(recipient, key, replacers.toList())
+    }
+
     fun send(recipient: CommandSender, key: String, replacer: TextReplacementConfig) {
         parser.get(key)
             .forEach { send(recipient, it.replaceText(replacer)) }
@@ -30,8 +34,12 @@ class MessageSender(private val parser: MessageParser) {
         send(recipient, replace(message, replacers))
     }
 
+    fun send(recipient: CommandSender, message: Component, vararg replacers: TextReplacementConfig) {
+        send(recipient, replace(message, *replacers))
+    }
+
     /**
-     * Sends the specified [message] while adding the default replacers (%prefix% and any PAPI placeholder)
+     * Sends the specified [message] while applying the default replacers (%prefix% and any PAPI placeholder)
      *
      * Every `send` function funnels down into this one
      */
@@ -39,11 +47,12 @@ class MessageSender(private val parser: MessageParser) {
         recipient.sendMessage(replace(message, defaultReplacers(recipient)))
     }
 
-    val defaultReplacers: (recipient: CommandSender) -> List<TextReplacementConfig> = { recipient ->
-        buildList {
-            add(prefixReplacer)
-            Replacers.withPAPI(if (recipient is OfflinePlayer) recipient else null)
+    val defaultReplacers: (recipient: CommandSender) -> List<TextReplacementConfig> =
+        { recipient ->
+            buildList {
+                add(prefixReplacer)
+                Replacers.withPAPI(if (recipient is OfflinePlayer) recipient else null)
+            }
         }
-    }
 
 }
