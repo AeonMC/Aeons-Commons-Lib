@@ -3,8 +3,8 @@ package me.aeon.commonslib.message
 import dev.dejvokep.boostedyaml.YamlDocument
 import dev.dejvokep.boostedyaml.block.implementation.Section
 import me.aeon.commonslib.components.ComponentUtil.Companion.toComponent
-import me.aeon.commonslib.components.Replacers
 import me.aeon.commonslib.components.Replacers.Companion.replacedWith
+import me.aeon.commonslib.message.MessageKeyRepo.PREFIX
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextReplacementConfig
 
@@ -71,6 +71,6 @@ class MessageParser(private val config: YamlDocument) {
      *
      * The replacement can be retrieved with **`get("prefix")`**
      */
-    fun prefixReplacer(): TextReplacementConfig = "%prefix%" replacedWith get("prefix")
+    fun prefixReplacer(): TextReplacementConfig = "%prefix%" replacedWith get(PREFIX)
 
 }

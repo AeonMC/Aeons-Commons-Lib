@@ -1,6 +1,8 @@
 package me.aeon.commonslib.commands
 
 import me.aeon.commonslib.components.Replacers.Companion.replacedWith
+import me.aeon.commonslib.message.MessageKeyRepo.GENERAL_COMMAND_DOES_NOT_EXIST
+import me.aeon.commonslib.message.MessageKeyRepo.GENERAL_NO_PERMISSION
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.plugin.java.JavaPlugin
@@ -72,7 +74,7 @@ abstract class CoreCommand<T>(
     ): Boolean {
 
         if (!checkPermission(sender)) {
-            messageSender.send(sender, "general.no-permission")
+            messageSender.send(sender, GENERAL_NO_PERMISSION)
             return true
         }
 
@@ -85,7 +87,7 @@ abstract class CoreCommand<T>(
         val subcommand = findSubcommand(subcommandName)
         if (subcommand == null) {
             messageSender.send(
-                sender, "general.subcommand-does-not-exist",
+                sender, GENERAL_COMMAND_DOES_NOT_EXIST,
                 "%subcommand%" replacedWith subcommandName
             )
             return true

@@ -1,6 +1,8 @@
 package me.aeon.commonslib.commands
 
 import me.aeon.commonslib.components.Replacers.Companion.replacedWith
+import me.aeon.commonslib.message.MessageKeyRepo.GENERAL_COMMAND_USAGE
+import me.aeon.commonslib.message.MessageKeyRepo.GENERAL_NO_PERMISSION
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.plugin.java.JavaPlugin
@@ -57,7 +59,7 @@ abstract class Subcommand<T>(
 
         /* Permission check */
         if (!checkPermission(sender)) {
-            messageSender.send(sender, "general.no-permission")
+            messageSender.send(sender, GENERAL_NO_PERMISSION)
             return true
         }
 
@@ -80,7 +82,7 @@ abstract class Subcommand<T>(
                 add("%description%" replacedWith description)
             }
 
-            messageSender.send(sender, "general.command-usage", replacers)
+            messageSender.send(sender, GENERAL_COMMAND_USAGE, replacers)
             return true
         } else {
             if (argSize == 1) {
@@ -95,7 +97,7 @@ abstract class Subcommand<T>(
             add("%description%" replacedWith description)
         }
 
-        messageSender.send(sender, "general.command-usage", replacers)
+        messageSender.send(sender, GENERAL_COMMAND_USAGE, replacers)
         return true
     }
 
@@ -137,7 +139,7 @@ abstract class Subcommand<T>(
 
         /* Qualify for fallback suggestion */
         if (suggestions.isEmpty() && input.length >= argument.fallbackMinInputLength) {
-            val fallbackSuggestions = argument.fallbackSugestions ?: return mutableListOf()
+            val fallbackSuggestions = argument.fallbackSuggestions ?: return mutableListOf()
             if (fallbackSuggestions.isNotEmpty()) {
                 return fallbackSuggestions.filterInput(input)
             }
