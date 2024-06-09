@@ -3,7 +3,7 @@ package me.aeon.commonslib.commands
 /**
  * A [Subcommand] argument
  */
-@Suppress("unused")
+@Suppress("UNUSED")
 class Argument private constructor(
     val name: String,
     val suggestions: MutableList<String>,

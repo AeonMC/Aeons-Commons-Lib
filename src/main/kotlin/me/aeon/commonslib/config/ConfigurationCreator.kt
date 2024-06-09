@@ -11,7 +11,7 @@ import org.bukkit.plugin.java.JavaPlugin
 import java.io.File
 import java.io.IOException
 
-@Suppress("unused")
+@Suppress("UNUSED")
 abstract class ConfigurationCreator(private val plugin: JavaPlugin) {
 
     private val major = Segment.range(0, Int.MAX_VALUE)
