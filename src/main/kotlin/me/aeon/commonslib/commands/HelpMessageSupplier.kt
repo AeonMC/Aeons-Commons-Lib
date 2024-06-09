@@ -1,18 +1,17 @@
 package me.aeon.commonslib.commands
 
-import me.aeon.commonslib.components.Replacers.Companion.replacedWith
+import me.aeon.commonslib.components.Replacers.replacedWith
 import me.aeon.commonslib.message.MessageParser
 import me.aeon.commonslib.message.MessageParser.ParseType.*
 import me.aeon.commonslib.message.MessageSender
 import org.bukkit.command.CommandSender
 
-@Suppress("unused")
 class HelpMessageSupplier(
     private val command: CoreCommand<*>, private val messagePath: String,
     private val messageParser: MessageParser, private val messageSender: MessageSender
 ) {
 
-    private val helpMessageMap = hashMapOf(
+    private val helpMessageMap = mapOf(
         HEADER to messageParser.get(messagePath, HEADER),
         FOOTER to messageParser.get(messagePath, FOOTER)
     )

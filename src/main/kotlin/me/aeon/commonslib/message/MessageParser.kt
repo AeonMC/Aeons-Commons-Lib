@@ -2,8 +2,8 @@ package me.aeon.commonslib.message
 
 import dev.dejvokep.boostedyaml.YamlDocument
 import dev.dejvokep.boostedyaml.block.implementation.Section
-import me.aeon.commonslib.components.ComponentUtil.Companion.toComponent
-import me.aeon.commonslib.components.Replacers.Companion.replacedWith
+import me.aeon.commonslib.util.ComponentUtil.toComponent
+import me.aeon.commonslib.components.Replacers.replacedWith
 import me.aeon.commonslib.message.MessageKeyRepo.PREFIX
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextReplacementConfig
