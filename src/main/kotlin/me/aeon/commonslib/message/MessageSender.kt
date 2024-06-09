@@ -1,13 +1,13 @@
 package me.aeon.commonslib.message
 
 import me.aeon.commonslib.components.Replacers
-import me.aeon.commonslib.components.Replacers.Companion.replace
+import me.aeon.commonslib.components.Replacers.replace
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextReplacementConfig
 import org.bukkit.OfflinePlayer
 import org.bukkit.command.CommandSender
 
-class MessageSender(private val parser: MessageParser) {
+class MessageSender(val parser: MessageParser) {
 
     private val prefixReplacer = parser.prefixReplacer()
 
@@ -51,7 +51,7 @@ class MessageSender(private val parser: MessageParser) {
         { recipient ->
             buildList {
                 add(prefixReplacer)
-                Replacers.withPAPI(if (recipient is OfflinePlayer) recipient else null)
+                add(Replacers.withPAPI(if (recipient is OfflinePlayer) recipient else null))
             }
         }
 
