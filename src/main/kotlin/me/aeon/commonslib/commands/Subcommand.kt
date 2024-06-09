@@ -1,8 +1,9 @@
 package me.aeon.commonslib.commands
 
-import me.aeon.commonslib.components.Replacers.Companion.replacedWith
+import me.aeon.commonslib.components.Replacers.replacedWith
 import me.aeon.commonslib.message.MessageKeyRepo.GENERAL_COMMAND_USAGE
 import me.aeon.commonslib.message.MessageKeyRepo.GENERAL_NO_PERMISSION
+import me.aeon.commonslib.util.GeneralUtil.filterContains
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.plugin.java.JavaPlugin
@@ -10,12 +11,12 @@ import org.bukkit.plugin.java.JavaPlugin
 /**
  * Describes a subcommand of a [CoreCommand] with possible arguments (by implementing [SubcommandArgumentProvider])
  */
-@Suppress("unused")
+@Suppress("UNUSED")
 abstract class Subcommand<T>(
     plugin: T
 ) : StandardCommand<T>(plugin) where T : JavaPlugin,
-                                  T : MessageParserProvider,
-                                  T : MessageSenderProvider  {
+                                     T : MessageParserProvider,
+                                     T : MessageSenderProvider {
 
     /**
      * Name of the subcommand
@@ -135,13 +136,13 @@ abstract class Subcommand<T>(
 
         val argument = arguments[lastIndex]
         val input = args[lastIndex]
-        val suggestions = argument.suggestions.filterInput(input)
+        val suggestions = argument.suggestions.filterContains(input)
 
         /* Qualify for fallback suggestion */
         if (suggestions.isEmpty() && input.length >= argument.fallbackMinInputLength) {
             val fallbackSuggestions = argument.fallbackSuggestions ?: return mutableListOf()
             if (fallbackSuggestions.isNotEmpty()) {
-                return fallbackSuggestions.filterInput(input)
+                return fallbackSuggestions.filterContains(input)
             }
         }
 

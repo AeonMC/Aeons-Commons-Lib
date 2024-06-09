@@ -1,13 +1,15 @@
 package me.aeon.commonslib.commands
 
-import me.aeon.commonslib.components.Replacers.Companion.replacedWith
+import me.aeon.commonslib.components.Replacers.replacedWith
 import me.aeon.commonslib.message.MessageKeyRepo.GENERAL_COMMAND_DOES_NOT_EXIST
 import me.aeon.commonslib.message.MessageKeyRepo.GENERAL_NO_PERMISSION
+import me.aeon.commonslib.util.GeneralUtil.filterContains
+import me.aeon.commonslib.util.GeneralUtil.filterInput
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.plugin.java.JavaPlugin
 
-@Suppress("unused")
+@Suppress("UNUSED")
 abstract class CoreCommand<T>(
     plugin: T,
     private val helpMessagePath: String // The supplier of help message (when no arguments are passed)
@@ -118,13 +120,13 @@ abstract class CoreCommand<T>(
             /* Main subcommand names */
             val suggestions = availableSubcommands
                 .map { it.name }
-                .filterInput(input)
+                .filterContains(input)
 
             /* Fallback (subcommand alias names) */
             if (suggestions.isEmpty() && input.length >= fallbackMinInputLength) {
                 return availableSubcommands
                     .flatMap { it.aliases }
-                    .filterInput(input)
+                    .filterContains(input)
             }
 
             return suggestions
