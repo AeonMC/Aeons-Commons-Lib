@@ -4,7 +4,6 @@ import me.aeon.commonslib.components.Replacers.replacedWith
 import me.aeon.commonslib.message.MessageKeyRepo.GENERAL_COMMAND_DOES_NOT_EXIST
 import me.aeon.commonslib.message.MessageKeyRepo.GENERAL_NO_PERMISSION
 import me.aeon.commonslib.util.GeneralUtil.filterContains
-import me.aeon.commonslib.util.GeneralUtil.filterInput
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.plugin.java.JavaPlugin
@@ -16,7 +15,6 @@ abstract class CoreCommand<T>(
 ) : StandardCommand<T>(plugin) where T : JavaPlugin,
                                      T : MessageParserProvider,
                                      T : MessageSenderProvider {
-
 
     val subcommands: List<Subcommand<*>> by lazy { subcommands() }
     val helpMessageSupplier by lazy {

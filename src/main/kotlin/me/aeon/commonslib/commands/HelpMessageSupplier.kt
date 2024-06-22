@@ -7,8 +7,10 @@ import me.aeon.commonslib.message.MessageSender
 import org.bukkit.command.CommandSender
 
 class HelpMessageSupplier(
-    private val command: CoreCommand<*>, private val messagePath: String,
-    private val messageParser: MessageParser, private val messageSender: MessageSender
+    private val command: CoreCommand<*>,
+    private val messagePath: String,
+    private val messageParser: MessageParser,
+    private val messageSender: MessageSender
 ) {
 
     private val helpMessageMap = mapOf(
@@ -17,10 +19,10 @@ class HelpMessageSupplier(
     )
 
     fun send(recipient: CommandSender, commandAlias: String) {
-        // Send header
+        /* Send header */
         helpMessageMap[HEADER]?.forEach { messageSender.send(recipient, it) }
 
-        // Parse body and send for each Subcommand
+        /* Parse body and send for each Subcommand */
         val body = messageParser.get(messagePath, BODY)
         command.subcommands.forEach { subcommand ->
 
@@ -45,7 +47,7 @@ class HelpMessageSupplier(
             body.forEach { messageSender.send(recipient, it, replacers) }
         }
 
-        // Send footer
+        /* Send footer */
         helpMessageMap[FOOTER]?.forEach { messageSender.send(recipient, it) }
     }
 
