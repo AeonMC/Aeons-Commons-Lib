@@ -7,8 +7,8 @@ plugins {
     id("maven-publish")
 }
 
-group = "me.aeon"
-version = "1.0.3"
+group = "xyz.aeonxd"
+version = "1.1.0"
 
 repositories {
     mavenCentral()
@@ -23,7 +23,8 @@ dependencies {
     compileOnly("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT")
     compileOnly("me.clip:placeholderapi:2.11.6")
     compileOnly("dev.dejvokep:boosted-yaml:1.3.5")
-    compileOnly("net.kyori:adventure-text-minimessage") { version { strictly("4.11.0") } }
+//    compileOnly("net.kyori:adventure-text-minimessage") { version { strictly("4.11.0") } }
+    compileOnly("dev.triumphteam:triumph-gui:3.1.10")
     implementation("dev.respark.licensegate:license-gate:1.0.4")
 }
 
