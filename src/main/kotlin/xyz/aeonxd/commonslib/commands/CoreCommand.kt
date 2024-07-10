@@ -79,11 +79,10 @@ abstract class CoreCommand<T>(
     ): Boolean {
         addReplacer("%sender%" replacedWith sender.name)
         addReplacer("%command%" replacedWith commandAlias)
+        addReplacer("%description%" replacedWith command.description)
 
         if (!checkPermission(sender)) {
-            messageSender.sendWithReplacers(sender, GENERAL_NO_PERMISSION)
-
-            clearReplacers()
+            messageSender.sendWithReplacers(sender, GENERAL_NO_PERMISSION, true)
             return true
         }
 
@@ -96,14 +95,11 @@ abstract class CoreCommand<T>(
         addReplacer("%subcommand%" replacedWith subcommandName)
         val subcommand = findSubcommand(subcommandName)
         if (subcommand == null) {
-            messageSender.sendWithReplacers(sender, GENERAL_COMMAND_DOES_NOT_EXIST)
-
-            clearReplacers()
+            messageSender.sendWithReplacers(sender, GENERAL_COMMAND_DOES_NOT_EXIST, true)
             return true
         }
 
-        subcommand.copyReplacersFrom(this)
-
+        copyReplacersTo(subcommand)
         subcommand.onCommand(sender, command, commandAlias, args)
         subcommand.clearReplacers()
         clearReplacers()

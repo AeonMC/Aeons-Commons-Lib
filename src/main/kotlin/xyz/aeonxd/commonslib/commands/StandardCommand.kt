@@ -40,12 +40,11 @@ abstract class StandardCommand<T>(
         addReplacers(
             "%sender%" replacedWith sender.name,
             "%command%" replacedWith commandAlias,
-            "%description%" replacedWith "Opens a menu with leaderboard entries"
+            "%description%" replacedWith command.description
         )
 
         if (!checkPermission(sender)) {
-            messageSender.sendWithReplacers(sender, MessageKeyRepo.GENERAL_NO_PERMISSION)
-            clearReplacers()
+            messageSender.sendWithReplacers(sender, MessageKeyRepo.GENERAL_NO_PERMISSION, true)
             return true
         }
 

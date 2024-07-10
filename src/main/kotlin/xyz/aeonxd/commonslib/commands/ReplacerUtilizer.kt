@@ -9,6 +9,10 @@ sealed interface ReplacerUtilizer {
     val replacers: MutableList<TextReplacementConfig>
     fun addReplacer(replacer: TextReplacementConfig) = replacers.add(replacer)
     fun addReplacers(vararg replacers: TextReplacementConfig) = replacers.forEach { addReplacer(it) }
+    fun updateReplacer(oldReplacer: TextReplacementConfig, newReplacer: TextReplacementConfig) {
+        replacers.remove(oldReplacer)
+        replacers.add(newReplacer)
+    }
 
     fun clearReplacers() = replacers.clear()
 
@@ -26,6 +30,21 @@ sealed interface ReplacerUtilizer {
         }
     }
 
-    fun MessageSender.sendWithReplacers(recipient: CommandSender, route: String) = send(recipient, route, replacers)
-    fun MessageSender.sendWithReplacers(recipient: CommandSender, message: Component) = send(recipient, message, replacers)
+    fun MessageSender.sendWithReplacers(
+        recipient: CommandSender,
+        route: String,
+        clearAfterwards: Boolean = false
+    ) {
+        send(recipient, route, replacers)
+        if (clearAfterwards) clearReplacers()
+    }
+
+    fun MessageSender.sendWithReplacers(
+        recipient: CommandSender,
+        message: Component,
+        clearAfterwards: Boolean = false
+    ) {
+        send(recipient, message, replacers)
+        if (clearAfterwards) clearReplacers()
+    }
 }

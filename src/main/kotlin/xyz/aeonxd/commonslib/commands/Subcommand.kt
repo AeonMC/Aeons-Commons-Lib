@@ -67,7 +67,7 @@ abstract class Subcommand<T>(
         sender: CommandSender, command: Command,
         commandAlias: String, args: Array<out String>
     ): Boolean {
-        addReplacer("%description%" replacedWith description)
+        addReplacer("%subcommandDescription%" replacedWith description)
 
         /* Permission check */
         if (!checkPermission(sender)) {
@@ -83,20 +83,19 @@ abstract class Subcommand<T>(
          */
         if (this is SubcommandArgumentProvider) {
             /* Execution condition */
-            if ((argSize - 1 >= minArgSize()) && (argSize - 1 <= maxArgSize())) {
+//            if ((argSize - 1 >= minArgSize()) && (argSize - 1 <= maxArgSize())) {
+            if ((argSize - 1) in minArgSize()..maxArgSize()) {
                 execute(sender, commandAlias, args[0], args.copyOfRange(1, args.size))
                 return true
             }
 
             addReplacer("%subcommand+args%" replacedWith "${args[0]} ${arguments().joinToString(separator = " ") { it.name }}")
-            messageSender.sendWithReplacers(sender, GENERAL_COMMAND_USAGE)
-            return true
-        } else {
-            addReplacer("%subcommand+args%" replacedWith args[0])
+        } else { /* Subcommand with no arguments, e.g. /cf reset */
             if (argSize == 1) {
                 execute(sender, commandAlias, args[0], args.copyOfRange(1, args.size))
                 return true
             }
+            addReplacer("%subcommand+args%" replacedWith args[0])
         }
 
         messageSender.sendWithReplacers(sender, GENERAL_COMMAND_USAGE)
@@ -120,7 +119,6 @@ abstract class Subcommand<T>(
         commandAlias: String, subcommandAlias: String,
         args: Array<out String>
     ): MutableList<String> {
-
         /* Insufficient permission */
         if (!checkPermission(sender)) return mutableListOf()
 
