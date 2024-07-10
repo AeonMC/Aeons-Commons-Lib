@@ -12,7 +12,7 @@ import java.io.File
 import java.io.IOException
 
 @Suppress("UNUSED")
-abstract class ConfigurationCreator(private val plugin: JavaPlugin) {
+abstract class ConfigurationCreator {
 
     private val major = Segment.range(0, Int.MAX_VALUE)
     private val minor = Segment.range(0, 10)
@@ -21,6 +21,7 @@ abstract class ConfigurationCreator(private val plugin: JavaPlugin) {
     protected val pattern = Pattern(major, separator, minor, separator, patch)
 
     abstract val fileName: String
+    abstract val plugin: JavaPlugin
 
     open fun generalSettings(): GeneralSettings = GeneralSettings.builder()
         .setKeyFormat(GeneralSettings.KeyFormat.STRING)
