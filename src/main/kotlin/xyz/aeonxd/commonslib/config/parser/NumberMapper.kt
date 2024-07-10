@@ -1,5 +1,6 @@
 package xyz.aeonxd.commonslib.config.parser
 
+@Suppress("UNUSED")
 sealed class NumberMapper<T> {
 
     abstract fun map(input: String): T

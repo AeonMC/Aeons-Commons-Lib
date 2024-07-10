@@ -5,7 +5,7 @@ import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.command.TabExecutor
 import org.bukkit.plugin.java.JavaPlugin
-import xyz.aeonxd.commonslib.components.Replacers.replacedWith
+import xyz.aeonxd.commonslib.replacer.Replacers.replacedWith
 import xyz.aeonxd.commonslib.message.MessageKeyRepo.GENERAL_COMMAND_USAGE
 import xyz.aeonxd.commonslib.message.MessageKeyRepo.GENERAL_NO_PERMISSION
 import xyz.aeonxd.commonslib.message.MessageSender
@@ -15,6 +15,7 @@ import xyz.aeonxd.commonslib.util.GeneralUtil.filterContains
  * Describes a subcommand of a [CoreCommand] with possible arguments (by implementing [SubcommandArgumentProvider])
  */
 abstract class Subcommand<T>(
+    @Suppress("UNUSED")
     protected val plugin: T
 ) : TabExecutor, Permissible, ReplacerUtilizer where T : JavaPlugin,
                                                      T : MessageParserProvider,

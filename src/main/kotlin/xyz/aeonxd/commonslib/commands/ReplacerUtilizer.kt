@@ -5,6 +5,7 @@ import net.kyori.adventure.text.TextReplacementConfig
 import org.bukkit.command.CommandSender
 import xyz.aeonxd.commonslib.message.MessageSender
 
+@Suppress("UNUSED")
 sealed interface ReplacerUtilizer {
     val replacers: MutableList<TextReplacementConfig>
     fun addReplacer(replacer: TextReplacementConfig) = replacers.add(replacer)

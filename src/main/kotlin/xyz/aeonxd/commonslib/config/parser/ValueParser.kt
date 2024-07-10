@@ -6,6 +6,7 @@ import xyz.aeonxd.commonslib.replacer.PlaceholderReplacer.Companion.setPlacehold
 import xyz.aeonxd.commonslib.util.GeneralUtil.isTrue
 import xyz.aeonxd.commonslib.util.PlaceholderViewerProvider
 
+@Suppress("UNUSED")
 interface ValueParser : PlaceholderViewerProvider {
 
     val section: Section?
