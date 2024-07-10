@@ -14,11 +14,11 @@ interface ValueParser : PlaceholderViewerProvider {
 
     fun parse(route: String): String? = parse(section, route)
     fun <T : Number> parseNumber(route: String, mapper: NumberMapper<T>): T? = parseNumber(section, route, mapper)
-    fun <T : Number> parseNumber(route: String, def: T, mapper: NumberMapper<T>): T? = parseNumber(section, route, def, mapper)
+    fun <T : Number> parseNumber(route: String, def: T, mapper: NumberMapper<T>): T = parseNumber(section, route, def, mapper)
     fun parseList(route: String): List<String> = parseList(section, route)
     fun <E : Enum<E>> parseEnum(route: String, clazz: Class<E>): E? = parseEnum(section, route, clazz)
     fun <E : Enum<E>> parseEnum(route: String, clazz: Class<E>, def: E): E = parseEnum(section, route, clazz, def)
-    fun isOptionEnabled(route: String): Boolean = isOptionEnabled(section, route)
+    fun parseBoolean(route: String): Boolean = parseBoolean(section, route)
     fun parsePAPIBeforeLocal(): Boolean = parsePAPIBeforeLocal(section)
 
     fun parse(section: Section?, route: String): String? =
@@ -26,7 +26,7 @@ interface ValueParser : PlaceholderViewerProvider {
             ?.applyPlaceholders(section)
 
     fun <T : Number> parseNumber(section: Section?, route: String, mapper: NumberMapper<T>): T? {
-        return parse(section, route)?.let { mapper.mapper(it) }
+        return parse(section, route)?.let { mapper.map(it) }
     }
 
     fun <T : Number> parseNumber(section: Section?, route: String, def: T, mapper: NumberMapper<T>): T {
@@ -42,7 +42,7 @@ interface ValueParser : PlaceholderViewerProvider {
         val enumString = parse(section, route)
             ?: return null
 
-        return clazz.enumConstants.find {
+        return clazz.enumConstants.firstOrNull {
             it.name.equals(enumString, true)
         }
     }
@@ -52,13 +52,13 @@ interface ValueParser : PlaceholderViewerProvider {
     }
 
 
-    fun isOptionEnabled(section: Section?, route: String) =
+    fun parseBoolean(section: Section?, route: String) =
         parse(section, route)
             ?.isTrue()
             ?: false
 
     fun parsePAPIBeforeLocal(section: Section?): Boolean =
-        isOptionEnabled(section, "parse_papi_before_local")
+        parseBoolean(section, "parse_papi_before_local")
 
 
     fun String.applyPlaceholders(section: Section?): String =
