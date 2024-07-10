@@ -16,6 +16,10 @@ interface ValueParser : PlaceholderViewerProvider {
     fun parse(route: String): String? = parse(section, route)
     fun <T : Number> parseNumber(route: String, mapper: NumberMapper<T>): T? = parseNumber(section, route, mapper)
     fun <T : Number> parseNumber(route: String, def: T, mapper: NumberMapper<T>): T = parseNumber(section, route, def, mapper)
+    fun parseInt(route: String): Int? = parseInt(section, route)
+    fun parseInt(route: String, def: Int): Int = parseInt(section, route, def)
+    fun parseLong(route: String): Long? = parseLong(section, route)
+    fun parseLong(route: String, def: Long): Long? = parseLong(section, route, def)
     fun parseList(route: String): List<String> = parseList(section, route)
     fun <E : Enum<E>> parseEnum(route: String, clazz: Class<E>): E? = parseEnum(section, route, clazz)
     fun <E : Enum<E>> parseEnum(route: String, clazz: Class<E>, def: E): E = parseEnum(section, route, clazz, def)
@@ -33,6 +37,12 @@ interface ValueParser : PlaceholderViewerProvider {
     fun <T : Number> parseNumber(section: Section?, route: String, def: T, mapper: NumberMapper<T>): T {
         return parseNumber(section, route, mapper) ?: def
     }
+
+    fun parseInt(section: Section?, route: String): Int? = parseNumber(section, route, NumberMapper.Int)
+    fun parseInt(section: Section?, route: String, def: Int): Int = parseNumber(section, route, NumberMapper.Int) ?: def
+    fun parseLong(section: Section?, route: String): Long? = parseNumber(section, route, NumberMapper.Long)
+    fun parseLong(section: Section?, route: String, def: Long): Long = parseNumber(section, route, NumberMapper.Long) ?: def
+
 
     fun parseList(section: Section?, route: String): List<String> =
         section?.getStringList(route)

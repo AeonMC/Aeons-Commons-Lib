@@ -5,6 +5,7 @@ sealed class NumberMapper<T> {
 
     abstract fun map(input: String): T
 
+
     data object Double : NumberMapper<kotlin.Double>() {
         override fun map(input: String) = input.toDouble()
     }
