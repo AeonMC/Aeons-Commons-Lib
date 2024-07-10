@@ -5,7 +5,7 @@ import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.command.TabExecutor
 import org.bukkit.plugin.java.JavaPlugin
-import xyz.aeonxd.commonslib.components.Replacers.replacedWith
+import xyz.aeonxd.commonslib.replacer.Replacers.replacedWith
 import xyz.aeonxd.commonslib.message.MessageKeyRepo.GENERAL_COMMAND_DOES_NOT_EXIST
 import xyz.aeonxd.commonslib.message.MessageKeyRepo.GENERAL_NO_PERMISSION
 import xyz.aeonxd.commonslib.message.MessageSender

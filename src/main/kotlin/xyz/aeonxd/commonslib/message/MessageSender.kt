@@ -4,10 +4,10 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextReplacementConfig
 import org.bukkit.OfflinePlayer
 import org.bukkit.command.CommandSender
-import xyz.aeonxd.commonslib.commands.ReplacerUtilizer
-import xyz.aeonxd.commonslib.components.Replacers
-import xyz.aeonxd.commonslib.components.Replacers.replace
+import xyz.aeonxd.commonslib.replacer.Replacers
+import xyz.aeonxd.commonslib.replacer.Replacers.replace
 
+@Suppress("UNUSED")
 class MessageSender(val parser: MessageParser) {
 
     private val prefixReplacer = parser.prefixReplacer()

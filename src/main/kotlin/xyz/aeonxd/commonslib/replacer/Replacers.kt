@@ -1,4 +1,4 @@
-package xyz.aeonxd.commonslib.components
+package xyz.aeonxd.commonslib.replacer
 
 import me.clip.placeholderapi.PlaceholderAPI
 import net.kyori.adventure.text.Component

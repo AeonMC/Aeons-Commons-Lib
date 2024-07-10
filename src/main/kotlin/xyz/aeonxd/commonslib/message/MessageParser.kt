@@ -4,7 +4,7 @@ import dev.dejvokep.boostedyaml.YamlDocument
 import dev.dejvokep.boostedyaml.block.implementation.Section
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextReplacementConfig
-import xyz.aeonxd.commonslib.components.Replacers.replacedWith
+import xyz.aeonxd.commonslib.replacer.Replacers.replacedWith
 import xyz.aeonxd.commonslib.message.MessageKeyRepo.PREFIX
 import xyz.aeonxd.commonslib.util.ComponentUtil.toComponent
 
