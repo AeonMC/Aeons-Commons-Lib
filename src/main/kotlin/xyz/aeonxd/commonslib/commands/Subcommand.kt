@@ -137,11 +137,11 @@ abstract class Subcommand<T>(
 
         val argument = arguments[lastIndex]
         val input = args[lastIndex]
-        val suggestions = argument.suggestions.filterContains(input)
+        val suggestions = argument.suggestions().filterContains(input)
 
         /* Qualify for fallback suggestion */
         if (suggestions.isEmpty() && input.length >= argument.fallbackMinInputLength) {
-            val fallbackSuggestions = argument.fallbackSuggestions ?: return mutableListOf()
+            val fallbackSuggestions = argument.fallbackSuggestions()
             if (fallbackSuggestions.isNotEmpty()) {
                 return fallbackSuggestions.filterContains(input)
             }

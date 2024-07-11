@@ -35,6 +35,16 @@ abstract class CoreCommand<T>(
     private val fallbackMinInputLength = 1
 
     init {
+        fun validateSubcommandArgsV2(arguments: List<Argument>) {
+            val optionalCount = arguments.count { it.isOptional }
+            if (optionalCount > 1) {
+                throw IllegalStateException("Argument cannot contain multiple subarguments")
+            }
+
+            if (optionalCount == 1 && !arguments.last().isOptional) {
+                throw IllegalStateException("Optional argument must be at the end")
+            }
+        }
         fun validateSubcommandArgs(arguments: List<Argument>) {
             val optionalCount = arguments.count { it.isOptional }
             if (optionalCount > 1) {
@@ -48,7 +58,7 @@ abstract class CoreCommand<T>(
 
         subcommands
             .filterIsInstance<SubcommandArgumentProvider>()
-            .forEach { validateSubcommandArgs(it.arguments()) }
+            .forEach { validateSubcommandArgsV2(it.arguments()) }
     }
 
     /**

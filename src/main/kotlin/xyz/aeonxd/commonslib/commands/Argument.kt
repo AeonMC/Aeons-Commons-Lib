@@ -1,13 +1,13 @@
 package xyz.aeonxd.commonslib.commands
 
 /**
- * A [Subcommand] argument
+ * Represents a (sub)command argument
  */
 @Suppress("UNUSED")
 class Argument private constructor(
     val name: String,
-    val suggestions: MutableList<String>,
-    val fallbackSuggestions: MutableList<String>?,
+    val suggestions: () -> MutableList<String>,
+    val fallbackSuggestions: () -> MutableList<String>,
     val fallbackMinInputLength: Int = 1,
     val isOptional: Boolean = false
 ) {
@@ -15,8 +15,8 @@ class Argument private constructor(
     class Builder {
 
         private lateinit var name: String
-        private lateinit var suggestions: MutableList<String>
-        private var fallbackSuggestions: MutableList<String>? = null
+        private var suggestions: () -> MutableList<String> = { mutableListOf() }
+        private var fallbackSuggestions: () -> MutableList<String> = { mutableListOf() }
         private var fallbackMinInputLength = 1
         private var isOptional = false
 
@@ -28,10 +28,9 @@ class Argument private constructor(
         /**
          * What should be suggested when one tries to tab-complete the subcommand
          */
-        fun suggestions(suggestions: List<String>) =
+        fun suggestions(suggestions: () -> MutableList<String>) =
             apply {
-                if (suggestions is MutableList) this.suggestions = suggestions
-                else this.suggestions = suggestions.toMutableList()
+                this.suggestions = suggestions
             }
 
         /**
@@ -40,18 +39,10 @@ class Argument private constructor(
          * how many characters should already be provided as an input to
          * look for fallback suggestions? Default value is 1
          */
-        fun fallbackSuggestions(fallbackSuggestions: List<String>?, minInputLength: Int = 1) =
+        fun fallbackSuggestions(minInputLength: Int = 1, fallbackSuggestions: () -> MutableList<String>) =
             apply {
                 fallbackMinInputLength(minInputLength)
-
-                if (fallbackSuggestions == null) {
-                    this.fallbackSuggestions = null
-                    return@apply
-                }
-
-                this.fallbackSuggestions =
-                    if (fallbackSuggestions is MutableList) fallbackSuggestions
-                    else fallbackSuggestions.toMutableList()
+                this.fallbackSuggestions = fallbackSuggestions
             }
 
         fun fallbackMinInputLength(length: Int) =
