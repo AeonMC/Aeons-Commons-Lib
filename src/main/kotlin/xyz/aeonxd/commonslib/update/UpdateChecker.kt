@@ -1,5 +1,6 @@
 package xyz.aeonxd.commonslib.update
 
+import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerJoinEvent
@@ -12,12 +13,12 @@ import kotlin.time.TimeSource.Monotonic.markNow
 abstract class UpdateChecker : Listener {
 
     abstract val scheduler: TaskScheduler
+    abstract val checkInterval: Long
     abstract val url: String
     abstract val currentVersion: String
     lateinit var newVersion: String
         private set
-    abstract val checkInterval: Long
-    var hasUpdateAvailable: Boolean = false
+    private var hasUpdateAvailable: Boolean = false
 
     /**
      * Registers the listener that executes [informUpdateOnJoin]
@@ -47,30 +48,22 @@ abstract class UpdateChecker : Listener {
         scheduler.runTaskTimerAsync(0L, checkInterval * 20L, ::checkForUpdates)
     }
 
+    open fun checkForUpdates() {
+        checkForUpdates({ result ->
+            Bukkit.getLogger().severe("New update found! (${result.newVersion})")
+            newVersion = result.newVersion
+            hasUpdateAvailable = true
+            registerInformer()
+            onUpdateAvailable()
+        }, {})
+    }
+
     /**
      * The main task for update checking
      */
-    open fun checkForUpdates() {
-        newVersion = try {
-            URL(url).openStream().bufferedReader().use { reader ->
-                reader.readLine()
-            }
-        } catch (ex: IOException) {
-            return onException(ex)
-        }
-
-        if (currentVersion != newVersion) {
-            scheduler.runTask {
-                hasUpdateAvailable = true
-                registerInformer()
-                onUpdateAvailable()
-            }
-        }
-    }
-
-    open fun checkForUpdates(
-        onUpdateFound: (UpdateCheckResult) -> Unit,
-        onNoUpdateFound: () -> Unit
+    inline fun checkForUpdates(
+        crossinline onUpdateFound: (UpdateCheckResult) -> Unit,
+        noinline onNoUpdateFound: () -> Unit
     ) {
         val start = markNow()
 
@@ -83,15 +76,11 @@ abstract class UpdateChecker : Listener {
         }
 
         if (currentVersion == newVersion) {
-            scheduler.runTask {
-                onNoUpdateFound()
-            }
+            scheduler.runTask(onNoUpdateFound)
             return
         }
 
-        scheduler.runTask {
-            onUpdateFound(UpdateCheckResult(currentVersion, newVersion, start.elapsedNow()))
-        }
+        scheduler.runTask { onUpdateFound(UpdateCheckResult(currentVersion, newVersion, start.elapsedNow())) }
     }
 
 }
