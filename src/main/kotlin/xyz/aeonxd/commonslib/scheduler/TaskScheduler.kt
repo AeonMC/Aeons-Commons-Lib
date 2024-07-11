@@ -1,7 +1,11 @@
 package xyz.aeonxd.commonslib.scheduler
 
+import org.bukkit.plugin.java.JavaPlugin
+
 @Suppress("UNUSED")
 interface TaskScheduler {
+
+    fun init(plugin: JavaPlugin)
 
     /* Synchronous */
     fun runTask(task: () -> Unit)
