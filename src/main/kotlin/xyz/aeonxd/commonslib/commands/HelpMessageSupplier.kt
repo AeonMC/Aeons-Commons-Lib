@@ -6,13 +6,16 @@ import xyz.aeonxd.commonslib.replacer.Replacers.replacedWith
 import xyz.aeonxd.commonslib.message.MessageParser
 import xyz.aeonxd.commonslib.message.MessageParser.ParseType.*
 import xyz.aeonxd.commonslib.message.MessageSender
+import xyz.aeonxd.commonslib.replacer.ReplacerUtilizer
 
 class HelpMessageSupplier(
     private val command: CoreCommand<*>,
     private val messagePath: String,
     private val messageParser: MessageParser,
     private val messageSender: MessageSender
-) {
+) : ReplacerUtilizer {
+
+    override val replacers = mutableListOf<TextReplacementConfig>()
 
     private val helpMessageMap = mapOf(
         HEADER to messageParser.get(messagePath, HEADER),
@@ -21,15 +24,15 @@ class HelpMessageSupplier(
 
     fun send(recipient: CommandSender, commandAlias: String) {
         /* Send header */
-        helpMessageMap[HEADER]?.forEach { messageSender.send(recipient, it) }
+        helpMessageMap[HEADER]?.forEach { messageSender.sendWithReplacers(recipient, it) }
 
         /* Parse body and send for each Subcommand */
         val body = messageParser.get(messagePath, BODY)
         command.subcommands.forEach { subcommand ->
-            val localReplacers = mutableListOf<TextReplacementConfig>()
-            with(localReplacers) {
+            val localReplacers = mutableListOf<TextReplacementConfig>().apply {
+                addAll(replacers)
                 add("%command%" replacedWith commandAlias)
-                add("%description%" replacedWith subcommand.description)
+                add("%subcommandDescription%" replacedWith subcommand.description)
             }
 
             if (subcommand is SubcommandArgumentProvider) {
@@ -42,7 +45,7 @@ class HelpMessageSupplier(
         }
 
         /* Send footer */
-        helpMessageMap[FOOTER]?.forEach { messageSender.send(recipient, it) }
+        helpMessageMap[FOOTER]?.forEach { messageSender.sendWithReplacers(recipient, it) }
     }
 
 }
