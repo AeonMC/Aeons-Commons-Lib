@@ -8,6 +8,7 @@ import org.bukkit.plugin.java.JavaPlugin
 import xyz.aeonxd.commonslib.replacer.Replacers.replacedWith
 import xyz.aeonxd.commonslib.message.MessageKeyRepo
 import xyz.aeonxd.commonslib.message.MessageSender
+import xyz.aeonxd.commonslib.replacer.ReplacerUtilizer
 
 @Suppress("UNUSED")
 abstract class StandardCommand<T>(
@@ -40,7 +41,7 @@ abstract class StandardCommand<T>(
         addReplacers(
             "%sender%" replacedWith sender.name,
             "%command%" replacedWith commandAlias,
-            "%description%" replacedWith command.description
+            "%commandDescription%" replacedWith command.description
         )
 
         if (!checkPermission(sender)) {

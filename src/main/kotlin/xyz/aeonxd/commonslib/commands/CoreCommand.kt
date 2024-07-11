@@ -9,6 +9,7 @@ import xyz.aeonxd.commonslib.replacer.Replacers.replacedWith
 import xyz.aeonxd.commonslib.message.MessageKeyRepo.GENERAL_COMMAND_DOES_NOT_EXIST
 import xyz.aeonxd.commonslib.message.MessageKeyRepo.GENERAL_NO_PERMISSION
 import xyz.aeonxd.commonslib.message.MessageSender
+import xyz.aeonxd.commonslib.replacer.ReplacerUtilizer
 import xyz.aeonxd.commonslib.util.GeneralUtil.filterContains
 
 abstract class CoreCommand<T>(
@@ -77,9 +78,11 @@ abstract class CoreCommand<T>(
         sender: CommandSender, command: Command,
         commandAlias: String, args: Array<out String>
     ): Boolean {
-        addReplacer("%sender%" replacedWith sender.name)
-        addReplacer("%command%" replacedWith commandAlias)
-        addReplacer("%description%" replacedWith command.description)
+        addReplacers(
+            "%sender%" replacedWith sender.name,
+            "%command%" replacedWith commandAlias,
+            "%commandDescription%" replacedWith command.description
+        )
 
         if (!checkPermission(sender)) {
             messageSender.sendWithReplacers(sender, GENERAL_NO_PERMISSION, true)
@@ -87,7 +90,9 @@ abstract class CoreCommand<T>(
         }
 
         if (args.isEmpty()) {
+            copyReplacersTo(helpMessageSupplier)
             helpMessageSupplier.send(sender, commandAlias)
+            helpMessageSupplier.clearReplacers()
             return true
         }
 
