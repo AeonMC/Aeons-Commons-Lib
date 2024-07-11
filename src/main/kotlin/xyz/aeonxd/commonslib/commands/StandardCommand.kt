@@ -5,34 +5,69 @@ import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.command.TabExecutor
 import org.bukkit.plugin.java.JavaPlugin
-import xyz.aeonxd.commonslib.replacer.Replacers.replacedWith
+import xyz.aeonxd.commonslib.commands.argument.ArgumentProvider
+import xyz.aeonxd.commonslib.commands.argument.ArgumentSuggester
 import xyz.aeonxd.commonslib.message.MessageKeyRepo
-import xyz.aeonxd.commonslib.message.MessageSender
+import xyz.aeonxd.commonslib.message.MessageParserProvider
+import xyz.aeonxd.commonslib.message.MessageSenderProvider
 import xyz.aeonxd.commonslib.replacer.ReplacerUtilizer
+import xyz.aeonxd.commonslib.replacer.Replacers.replacedWith
+import xyz.aeonxd.commonslib.util.GeneralUtil.filterContains
 
-@Suppress("UNUSED")
 abstract class StandardCommand<T>(
     @Suppress("UNUSED")
-    protected val plugin: T,
-) : TabExecutor, Permissible, ReplacerUtilizer where T : JavaPlugin,
-                                                     T : MessageParserProvider,
-                                                     T : MessageSenderProvider {
+    protected val plugin: T
+) : TabExecutor, /* Main command execution logic */
+    ArgumentSuggester, /* Logic for suggesting arguments */
+    Permissible, /* Permission-based command */
+    ReplacerUtilizer
+        where T : JavaPlugin,
+              T : MessageParserProvider,
+              T : MessageSenderProvider {
 
-    override val replacers = mutableListOf<TextReplacementConfig>()
-    protected val messageSender: MessageSender = plugin.messageSender
 
-    /**
-     * The execution logic of the command.
-     * Before this function is executed, it is
-     * made sure that the sender has permission
-     * @param commandAlias Main command identifier used
-     * @param args Command arguments
-     */
+    final override val replacers = mutableListOf<TextReplacementConfig>()
+    protected val messageSender = plugin.messageSender
+
+
     abstract fun execute(
         sender: CommandSender,
         commandAlias: String,
         args: Array<out String>
     )
+
+    final override fun suggest(
+        sender: CommandSender, command: Command,
+        commandAlias: String, args: Array<out String>
+    ): MutableList<String> {
+        /* Insufficient permission */
+        if (!checkPermission(sender)) return mutableListOf()
+        /* No need for other suggestions */
+        if (this !is ArgumentProvider) return mutableListOf()
+
+        val arguments = arguments()
+        val lastIndex = args.size - 1
+
+        /* Exceeding arguments */
+        if (args.size > arguments.size) return mutableListOf()
+
+        val argument = arguments[lastIndex]
+        val input = args[lastIndex]
+        val suggestionCondition = argument.suggestionCondition
+        val suggestions = argument.suggestions()
+            .filter { suggestionCondition(sender, it) }
+            .filterContains(input)
+
+        /* Qualify for fallback suggestion */
+        if (suggestions.isEmpty() && input.length > argument.fallbackMinInputLength) {
+            val fallbackSuggestions = argument.fallbackSuggestions()
+            if (fallbackSuggestions.isNotEmpty()) {
+                return fallbackSuggestions.filterContains(input)
+            }
+        }
+
+        return suggestions
+    }
 
     override fun onCommand(
         sender: CommandSender, command: Command,
@@ -52,6 +87,13 @@ abstract class StandardCommand<T>(
         execute(sender, commandAlias, args)
         clearReplacers()
         return true
+    }
+
+    override fun onTabComplete(
+        sender: CommandSender, command: Command,
+        commandAlias: String, args: Array<out String>
+    ): MutableList<String> {
+        return suggest(sender, command, commandAlias, args)
     }
 
 }

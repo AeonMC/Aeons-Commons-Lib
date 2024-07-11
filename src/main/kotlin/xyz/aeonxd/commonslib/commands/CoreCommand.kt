@@ -1,26 +1,23 @@
 package xyz.aeonxd.commonslib.commands
 
-import net.kyori.adventure.text.TextReplacementConfig
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
-import org.bukkit.command.TabExecutor
 import org.bukkit.plugin.java.JavaPlugin
-import xyz.aeonxd.commonslib.replacer.Replacers.replacedWith
+import xyz.aeonxd.commonslib.commands.argument.Argument
+import xyz.aeonxd.commonslib.commands.argument.ArgumentProvider
 import xyz.aeonxd.commonslib.message.MessageKeyRepo.GENERAL_COMMAND_DOES_NOT_EXIST
 import xyz.aeonxd.commonslib.message.MessageKeyRepo.GENERAL_NO_PERMISSION
-import xyz.aeonxd.commonslib.message.MessageSender
-import xyz.aeonxd.commonslib.replacer.ReplacerUtilizer
+import xyz.aeonxd.commonslib.message.MessageParserProvider
+import xyz.aeonxd.commonslib.message.MessageSenderProvider
+import xyz.aeonxd.commonslib.replacer.Replacers.replacedWith
 import xyz.aeonxd.commonslib.util.GeneralUtil.filterContains
 
 abstract class CoreCommand<T>(
-    protected val plugin: T,
+    plugin: T,
     private val helpMessagePath: String // The supplier of help message (when no arguments are passed)
-) : TabExecutor, Permissible, ReplacerUtilizer where T : JavaPlugin,
-                                                     T : MessageParserProvider,
-                                                     T : MessageSenderProvider {
-
-    override val replacers = mutableListOf<TextReplacementConfig>()
-    protected val messageSender: MessageSender = plugin.messageSender
+) : StandardCommand<T>(plugin) where T : JavaPlugin,
+                                     T : MessageParserProvider,
+                                     T : MessageSenderProvider {
 
     val subcommands: List<Subcommand<*>> by lazy { subcommands() }
     val helpMessageSupplier by lazy {
@@ -45,19 +42,9 @@ abstract class CoreCommand<T>(
                 throw IllegalStateException("Optional argument must be at the end")
             }
         }
-        fun validateSubcommandArgs(arguments: List<Argument>) {
-            val optionalCount = arguments.count { it.isOptional }
-            if (optionalCount > 1) {
-                throw IllegalStateException("Argument cannot contain multiple subarguments")
-            }
-
-            if (optionalCount == 1 && !arguments.last().isOptional) {
-                throw IllegalStateException("Optional argument must be at the end")
-            }
-        }
 
         subcommands
-            .filterIsInstance<SubcommandArgumentProvider>()
+            .filterIsInstance<ArgumentProvider>()
             .forEach { validateSubcommandArgsV2(it.arguments()) }
     }
 
@@ -84,7 +71,13 @@ abstract class CoreCommand<T>(
         }
     }
 
-    override fun onCommand(
+    final override fun execute(
+        sender: CommandSender,
+        commandAlias: String,
+        args: Array<out String>
+    ) {}
+
+    final override fun onCommand(
         sender: CommandSender, command: Command,
         commandAlias: String, args: Array<out String>
     ): Boolean {
@@ -94,11 +87,13 @@ abstract class CoreCommand<T>(
             "%commandDescription%" replacedWith command.description
         )
 
+        /* Permission check */
         if (!checkPermission(sender)) {
             messageSender.sendWithReplacers(sender, GENERAL_NO_PERMISSION, true)
             return true
         }
 
+        /* No subcommand provided */
         if (args.isEmpty()) {
             copyReplacersTo(helpMessageSupplier)
             helpMessageSupplier.send(sender, commandAlias)
@@ -122,23 +117,17 @@ abstract class CoreCommand<T>(
         return true
     }
 
-    /**
-     * Possible returns
-     * - an empty list if sender has no access to this command
-     * - subcommand names if arguments size is 1, unless it's empty - then returns the alias names
-     * - the found subcommand's implementation of [onTabComplete] if arguments size isn't 1
-     * - an empty list if no subcommand was found
-     */
     override fun onTabComplete(
         sender: CommandSender, command: Command,
-        alias: String, args: Array<out String>
+        commandAlias: String, args: Array<out String>
     ): MutableList<String> {
         if (!checkPermission(sender)) return mutableListOf()
         val input = args[0]
 
+        /* Subcommand suggestions */
         if (args.size == 1) {
-
-            val availableSubcommands = subcommands.filter { sender.hasPermission(it.permission) }
+            val availableSubcommands = subcommands
+                .filter { sender.hasPermission(it.permission) }
 
             /* Main subcommand names */
             val suggestions = availableSubcommands
@@ -155,9 +144,12 @@ abstract class CoreCommand<T>(
             return suggestions
         }
 
-        return findSubcommand(input)
-            ?.onTabComplete(sender, command, alias, args)
-            ?: mutableListOf()
+        /* Subcommand argument suggestions */
+        val subcommand = findSubcommand(input)
+            ?: return mutableListOf()
+        if (subcommand !is ArgumentProvider) return mutableListOf()
+
+        return subcommand.onTabComplete(sender, command, commandAlias, args)
     }
 
 }
