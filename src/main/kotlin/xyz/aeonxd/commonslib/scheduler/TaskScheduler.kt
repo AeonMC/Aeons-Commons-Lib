@@ -1,5 +1,6 @@
 package xyz.aeonxd.commonslib.scheduler
 
+@Suppress("UNUSED")
 interface TaskScheduler {
 
     /* Synchronous */

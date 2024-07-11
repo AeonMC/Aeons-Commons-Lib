@@ -8,6 +8,7 @@ import java.io.IOException
 import java.net.URL
 import kotlin.time.TimeSource.Monotonic.markNow
 
+@Suppress("UNUSED")
 abstract class UpdateChecker : Listener {
 
     abstract val scheduler: TaskScheduler
