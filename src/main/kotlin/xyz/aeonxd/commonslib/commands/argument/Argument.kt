@@ -1,4 +1,6 @@
-package xyz.aeonxd.commonslib.commands
+package xyz.aeonxd.commonslib.commands.argument
+
+import org.bukkit.command.CommandSender
 
 /**
  * Represents a (sub)command argument
@@ -7,18 +9,22 @@ package xyz.aeonxd.commonslib.commands
 class Argument private constructor(
     val name: String,
     val suggestions: () -> MutableList<String>,
+    val suggestionCondition: (CommandSender, String) -> Boolean,
     val fallbackSuggestions: () -> MutableList<String>,
     val fallbackMinInputLength: Int = 1,
     val isOptional: Boolean = false
 ) {
 
-    class Builder {
+    class Builder() {
 
         private lateinit var name: String
         private var suggestions: () -> MutableList<String> = { mutableListOf() }
+        private var suggestionCondition: (CommandSender, String) -> Boolean = { _, _ -> true }
         private var fallbackSuggestions: () -> MutableList<String> = { mutableListOf() }
         private var fallbackMinInputLength = 1
         private var isOptional = false
+
+        constructor(name: String) : this() { name(name) }
 
         /**
          * Argument suggestion name
@@ -31,6 +37,12 @@ class Argument private constructor(
         fun suggestions(suggestions: () -> MutableList<String>) =
             apply {
                 this.suggestions = suggestions
+            }
+
+        /* Only returns the suggestions which pass the condition */
+        fun suggestionCondition(condition: (CommandSender, String) -> Boolean) =
+            apply {
+                this.suggestionCondition = condition
             }
 
         /**
@@ -58,6 +70,7 @@ class Argument private constructor(
         fun build(): Argument = Argument(
             name,
             suggestions,
+            suggestionCondition,
             fallbackSuggestions,
             fallbackMinInputLength,
             isOptional

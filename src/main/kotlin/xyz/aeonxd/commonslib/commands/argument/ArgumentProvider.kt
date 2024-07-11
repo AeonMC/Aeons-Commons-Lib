@@ -1,6 +1,6 @@
-package xyz.aeonxd.commonslib.commands
+package xyz.aeonxd.commonslib.commands.argument
 
-fun interface SubcommandArgumentProvider {
+fun interface ArgumentProvider {
     fun arguments(): List<Argument>
 
     fun minArgSize(): Int = arguments().count { !it.isOptional }
