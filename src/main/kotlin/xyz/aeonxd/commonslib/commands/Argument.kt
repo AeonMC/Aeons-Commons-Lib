@@ -64,7 +64,7 @@ class Argument private constructor(
         /**
          * Builds the [Argument]
          */
-        fun build(): xyz.aeonxd.commonslib.commands.Argument = xyz.aeonxd.commonslib.commands.Argument(
+        fun build(): Argument = Argument(
             name,
             suggestions,
             fallbackSuggestions,
