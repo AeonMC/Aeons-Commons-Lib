@@ -1,4 +1,4 @@
-package xyz.aeonxd.commonslib.commands
+package xyz.aeonxd.commonslib.replacer
 
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextReplacementConfig
@@ -6,7 +6,8 @@ import org.bukkit.command.CommandSender
 import xyz.aeonxd.commonslib.message.MessageSender
 
 @Suppress("UNUSED")
-sealed interface ReplacerUtilizer {
+interface ReplacerUtilizer {
+
     val replacers: MutableList<TextReplacementConfig>
     fun addReplacer(replacer: TextReplacementConfig) = replacers.add(replacer)
     fun addReplacers(vararg replacers: TextReplacementConfig) = replacers.forEach { addReplacer(it) }
@@ -48,4 +49,5 @@ sealed interface ReplacerUtilizer {
         send(recipient, message, replacers)
         if (clearAfterwards) clearReplacers()
     }
+
 }
