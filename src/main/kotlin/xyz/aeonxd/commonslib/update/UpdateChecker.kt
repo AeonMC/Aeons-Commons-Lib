@@ -1,11 +1,9 @@
 package xyz.aeonxd.commonslib.update
 
-import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerJoinEvent
 import xyz.aeonxd.commonslib.scheduler.TaskScheduler
-import java.io.IOException
 import java.net.URL
 import kotlin.time.TimeSource.Monotonic.markNow
 
@@ -15,8 +13,8 @@ abstract class UpdateChecker : Listener {
     abstract val scheduler: TaskScheduler
     abstract val checkInterval: Long
     abstract val url: String
-    abstract val currentVersion: String
-    lateinit var newVersion: String
+    abstract val currentVersion: PluginVersion
+    lateinit var newVersion: PluginVersion
         private set
     private var hasUpdateAvailable: Boolean = false
 
@@ -33,7 +31,7 @@ abstract class UpdateChecker : Listener {
     /**
      * Gets called directly if there was something wrong with checking for an update
      */
-    abstract fun onException(exception: IOException)
+    abstract fun onException(exception: Exception)
 
     /**
      * Gets called every time a player joins
@@ -50,7 +48,6 @@ abstract class UpdateChecker : Listener {
 
     open fun checkForUpdates() {
         checkForUpdates({ result ->
-            Bukkit.getLogger().severe("New update found! (${result.newVersion})")
             newVersion = result.newVersion
             hasUpdateAvailable = true
             registerInformer()
@@ -69,13 +66,14 @@ abstract class UpdateChecker : Listener {
 
         val newVersion = try {
             URL(url).openStream().bufferedReader().use { reader ->
-                reader.readLine()
+                PluginVersion.of(reader.readLine())
             }
-        } catch (ex: IOException) {
+        } catch (ex: Exception) {
             return onException(ex)
         }
 
-        if (currentVersion == newVersion) {
+        /* Shouldn't ever be greater but still */
+        if (currentVersion >= newVersion) {
             scheduler.runTask(onNoUpdateFound)
             return
         }
