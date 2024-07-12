@@ -1,10 +1,12 @@
-package xyz.aeonxd.commonslib.commands
+package xyz.aeonxd.commonslib.commands.core
 
 import net.kyori.adventure.text.TextReplacementConfig
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.command.TabExecutor
 import org.bukkit.plugin.java.JavaPlugin
+import xyz.aeonxd.commonslib.commands.Permissible
+import xyz.aeonxd.commonslib.commands.argument.Argument
 import xyz.aeonxd.commonslib.commands.argument.ArgumentProvider
 import xyz.aeonxd.commonslib.commands.argument.ArgumentSuggester
 import xyz.aeonxd.commonslib.message.MessageKeyRepo
@@ -20,14 +22,15 @@ abstract class StandardCommand<T>(
 ) : TabExecutor, /* Main command execution logic */
     ArgumentSuggester, /* Logic for suggesting arguments */
     Permissible, /* Permission-based command */
-    ReplacerUtilizer
+    ReplacerUtilizer,
+    MessageSenderProvider
         where T : JavaPlugin,
               T : MessageParserProvider,
               T : MessageSenderProvider {
 
 
     final override val replacers = mutableListOf<TextReplacementConfig>()
-    protected val messageSender = plugin.messageSender
+    override val messageSender = plugin.messageSender
 
 
     abstract fun execute(
@@ -46,23 +49,28 @@ abstract class StandardCommand<T>(
         if (this !is ArgumentProvider) return mutableListOf()
 
         val arguments = arguments()
-        val lastIndex = args.size - 1
-
         /* Exceeding arguments */
         if (args.size > arguments.size) return mutableListOf()
 
-        val argument = arguments[lastIndex]
+        val lastIndex = args.lastIndex
+
+        @Suppress("UNCHECKED_CAST")
+        val argument = arguments[lastIndex] as Argument<Any>
         val input = args[lastIndex]
         val suggestionCondition = argument.suggestionCondition
         val suggestions = argument.suggestions()
             .filter { suggestionCondition(sender, it) }
+            .map { argument.mapToString(it) }
             .filterContains(input)
 
         /* Qualify for fallback suggestion */
         if (suggestions.isEmpty() && input.length > argument.fallbackMinInputLength) {
             val fallbackSuggestions = argument.fallbackSuggestions()
             if (fallbackSuggestions.isNotEmpty()) {
-                return fallbackSuggestions.filterContains(input)
+                return fallbackSuggestions
+                    .filter { suggestionCondition(sender, it) }
+                    .map { argument.mapToString(it) }
+                    .filterContains(input)
             }
         }
 

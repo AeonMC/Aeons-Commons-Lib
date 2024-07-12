@@ -1,4 +1,4 @@
-package xyz.aeonxd.commonslib.commands
+package xyz.aeonxd.commonslib.commands.core
 
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender

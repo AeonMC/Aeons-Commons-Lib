@@ -3,7 +3,7 @@ package xyz.aeonxd.commonslib.commands.argument
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 
-interface ArgumentSuggester {
+fun interface ArgumentSuggester {
 
     /**
      * The suggestions when the [CommandSender] presses the **TAB** key

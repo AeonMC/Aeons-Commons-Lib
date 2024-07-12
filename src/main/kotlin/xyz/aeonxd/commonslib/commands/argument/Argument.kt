@@ -6,76 +6,69 @@ import org.bukkit.command.CommandSender
  * Represents a (sub)command argument
  */
 @Suppress("UNUSED")
-class Argument private constructor(
+class Argument<T> private constructor(
     val name: String,
-    val suggestions: () -> MutableList<String>,
-    val suggestionCondition: (CommandSender, String) -> Boolean,
-    val fallbackSuggestions: () -> MutableList<String>,
-    val fallbackMinInputLength: Int = 1,
-    val isOptional: Boolean = false
+    val suggestions: () -> MutableList<T>,
+    val suggestionCondition: (CommandSender, T) -> Boolean,
+    val fallbackSuggestions: () -> MutableList<T>,
+    val fallbackMinInputLength: Int,
+    val isOptional: Boolean,
+    val mapToString: (T) -> String
 ) {
 
-    class Builder() {
+    open class Builder<T>() {
+
+        class Str() : Builder<String>() {
+            constructor(name: String) : this() { name(name) }
+        }
 
         private lateinit var name: String
-        private var suggestions: () -> MutableList<String> = { mutableListOf() }
-        private var suggestionCondition: (CommandSender, String) -> Boolean = { _, _ -> true }
-        private var fallbackSuggestions: () -> MutableList<String> = { mutableListOf() }
+        private var suggestions: () -> MutableList<T> = { mutableListOf() }
+        private var suggestionCondition: (CommandSender, T) -> Boolean = { _, _ -> true }
+        private var fallbackSuggestions: () -> MutableList<T> = { mutableListOf() }
         private var fallbackMinInputLength = 1
         private var isOptional = false
+        private var mapToString: (T) -> String = { it.toString() }
 
-        constructor(name: String) : this() { name(name) }
+        constructor(name: String) : this() {
+            name(name)
+        }
 
-        /**
-         * Argument suggestion name
-         */
         fun name(name: String) = apply { this.name = name }
 
-        /**
-         * What should be suggested when one tries to tab-complete the subcommand
-         */
-        fun suggestions(suggestions: () -> MutableList<String>) =
-            apply {
-                this.suggestions = suggestions
-            }
+        fun suggestions(suggestions: () -> MutableList<T>) = apply {
+            this.suggestions = suggestions
+        }
 
-        /* Only returns the suggestions which pass the condition */
-        fun suggestionCondition(condition: (CommandSender, String) -> Boolean) =
-            apply {
-                this.suggestionCondition = condition
-            }
+        fun suggestionCondition(condition: (CommandSender, T) -> Boolean) = apply {
+            this.suggestionCondition = condition
+        }
 
-        /**
-         * Suggestions when the main [suggestions] list is empty
-         * @param minInputLength When the main suggestion list is empty,
-         * how many characters should already be provided as an input to
-         * look for fallback suggestions? Default value is 1
-         */
-        fun fallbackSuggestions(minInputLength: Int = 1, fallbackSuggestions: () -> MutableList<String>) =
-            apply {
-                fallbackMinInputLength(minInputLength)
-                this.fallbackSuggestions = fallbackSuggestions
-            }
+        fun fallbackSuggestions(minInputLength: Int = 1, suggestions: () -> MutableList<T>) = apply {
+            fallbackMinInputLength(minInputLength)
+            this.fallbackSuggestions = suggestions
+        }
 
-        fun fallbackMinInputLength(length: Int) =
-            apply { this.fallbackMinInputLength = length }
+        fun fallbackMinInputLength(length: Int) = apply {
+            this.fallbackMinInputLength = length
+        }
 
-        fun optional(optional: Boolean) =
-            apply { this.isOptional = optional }
+        fun optional(optional: Boolean) = apply {
+            this.isOptional = optional
+        }
 
+        fun stringMapper(mapper: (T) -> String) = apply {
+            this.mapToString = mapper
+        }
 
-        /**
-         * Builds the [Argument]
-         */
-        fun build(): Argument = Argument(
+        fun build(): Argument<T> = Argument(
             name,
             suggestions,
             suggestionCondition,
             fallbackSuggestions,
             fallbackMinInputLength,
-            isOptional
+            isOptional,
+            mapToString
         )
-
     }
-
 }

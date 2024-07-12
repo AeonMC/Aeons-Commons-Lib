@@ -1,8 +1,9 @@
-package xyz.aeonxd.commonslib.commands
+package xyz.aeonxd.commonslib.commands.core
 
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.plugin.java.JavaPlugin
+import xyz.aeonxd.commonslib.commands.HelpMessageSupplier
 import xyz.aeonxd.commonslib.commands.argument.Argument
 import xyz.aeonxd.commonslib.commands.argument.ArgumentProvider
 import xyz.aeonxd.commonslib.message.MessageKeyRepo.GENERAL_COMMAND_DOES_NOT_EXIST
@@ -32,10 +33,10 @@ abstract class CoreCommand<T>(
     private val fallbackMinInputLength = 1
 
     init {
-        fun validateSubcommandArgsV2(arguments: List<Argument>) {
+        fun validateSubcommandArgs(arguments: List<Argument<*>>) {
             val optionalCount = arguments.count { it.isOptional }
             if (optionalCount > 1) {
-                throw IllegalStateException("Argument cannot contain multiple subarguments")
+                throw IllegalStateException("Argument cannot contain multiple optional subarguments")
             }
 
             if (optionalCount == 1 && !arguments.last().isOptional) {
@@ -45,7 +46,7 @@ abstract class CoreCommand<T>(
 
         subcommands
             .filterIsInstance<ArgumentProvider>()
-            .forEach { validateSubcommandArgsV2(it.arguments()) }
+            .forEach { validateSubcommandArgs(it.arguments()) }
     }
 
     /**

@@ -3,6 +3,7 @@ package xyz.aeonxd.commonslib.commands
 import net.kyori.adventure.text.TextReplacementConfig
 import org.bukkit.command.CommandSender
 import xyz.aeonxd.commonslib.commands.argument.ArgumentProvider
+import xyz.aeonxd.commonslib.commands.core.CoreCommand
 import xyz.aeonxd.commonslib.replacer.Replacers.replacedWith
 import xyz.aeonxd.commonslib.message.MessageParser
 import xyz.aeonxd.commonslib.message.MessageParser.ParseType.*
